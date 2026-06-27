@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: fleetiq
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fleetiq}
+      POSTGRES_DB: fleetiq
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fleetiq"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://fleetiq:${POSTGRES_PASSWORD:-fleetiq}@db:5432/fleetiq
+    ports:
+      - "8080:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
