@@ -33,7 +33,7 @@ jobs:
       - name: Dependency audit (pip-audit)
         run: pip-audit -r requirements.txt
 
-    build-and-scan-image:
+  build-and-scan-image:
     needs: test-and-scan
     runs-on: ubuntu-latest
     steps:
