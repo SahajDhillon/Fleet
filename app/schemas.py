@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ClusterCreate(BaseModel):
@@ -16,8 +16,7 @@ class ClusterOut(BaseModel):
     provider: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class HealthReportCreate(BaseModel):
     status: str
@@ -31,5 +30,4 @@ class HealthReportOut(HealthReportCreate):
     cluster_id: int
     reported_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

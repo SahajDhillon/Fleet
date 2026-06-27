@@ -18,6 +18,11 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/")
+def root():
+    return {"service": "FleetIQ", "version": "0.1.0"}
+
+
 @app.post("/clusters", response_model=schemas.ClusterOut, status_code=201)
 def register_cluster(cluster: schemas.ClusterCreate, db: Session = Depends(get_db)):
     existing = db.query(models.Cluster).filter(models.Cluster.name == cluster.name).first()
