@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: python -m pytest -v
+
+      - name: SAST scan (Bandit)
+        run: bandit -r app
+
+      - name: Dependency audit (pip-audit)
+        run: pip-audit -r requirements.txt
+
+  build-and-scan-image:
+    needs: test-and-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t fleetiq:${{ github.sha }} .
+
+      - name: Scan image (Trivy)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: fleetiq:${{ github.sha }}
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "0"
