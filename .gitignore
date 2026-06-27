@@ -17,3 +17,9 @@ __pycache__/
 # Local databases
 *.db
 *.sqlite3
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/crash.log
